@@ -1,0 +1,11 @@
+{
+  "name": "com.llib.servicelocator",
+  "version": "1.0.0",
+  "displayName": "Service Locator",
+  "description": "\uae30\ubcf8\uc801\uc778 \uc11c\ube44\uc2a4 \ub85c\ucf00\uc774\ud130 \uc785\ub2c8\ub2e4.",
+  "unity": "2022.0",
+  "author": {
+    "name": "LUMOS",
+    "email": "lumos5934@gmail.com"
+  }
+}
