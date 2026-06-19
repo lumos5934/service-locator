@@ -1,14 +1,13 @@
 using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using UnityEngine;
 
 namespace LLib
 {
     public static class Services
     {
-        private static readonly Dictionary<Type, object> ServicesByType = new();
+        private static readonly ConcurrentDictionary<Type, object> ServicesByType = new();
 
-        
         public static void Register<T>(T service) where T : class
         {
             if (service == null) 
@@ -16,45 +15,32 @@ namespace LLib
             
             var type = typeof(T);
             
-            if (!ServicesByType.TryGetValue(type, out var containsService))
+            if (!ServicesByType.TryAdd(type, service))
             {
-                ServicesByType[type] = service;
-                return;
-            }
-
-            if (containsService != null)
-            {
-                Debug.LogWarning($"{typeof(T)} : ALREADY REGISTERED. Ignore new one.");
+                Debug.LogWarning($"{typeof(T).Name} : ALREADY REGISTERED. Ignore new one.");
             }
         }
-
 
         public static void Unregister<T>() where T : class
         {
-            var type = typeof(T);
-            
-            ServicesByType.Remove(type);
+            ServicesByType.TryRemove(typeof(T), out _);
         }
-
 
         public static T Get<T>() where T : class
         {
             if (ServicesByType.TryGetValue(typeof(T), out var service))
                 return (T)service;
 
-            Debug.LogWarning($"NOT REGISTERED : {typeof(T)}");
+            Debug.LogWarning($"NOT REGISTERED : {typeof(T).Name}");
             return null;
         }
 
-        
         public static void Replace<T>(T service) where T : class
         {
-            var type = typeof(T);
+            if (service == null) 
+                throw new ArgumentNullException(nameof(service));
             
-            if (ServicesByType.ContainsKey(type))
-            {
-                ServicesByType[type] = service;
-            }
+            ServicesByType[typeof(T)] = service;
         }
     }
 }
