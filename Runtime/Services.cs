@@ -7,11 +7,13 @@ namespace LLib
     public static class Services
     {
         private static readonly Dictionary<Type, object> ServicesByType = new();
-        private static bool _useAutoCleanup = true;
 
         
         public static void Register<T>(T service) where T : class
         {
+            if (service == null) 
+                throw new ArgumentNullException(nameof(service));
+            
             var type = typeof(T);
             
             if (!ServicesByType.TryGetValue(type, out var containsService))
@@ -23,12 +25,6 @@ namespace LLib
             if (containsService != null)
             {
                 Debug.LogWarning($"{typeof(T)} : ALREADY REGISTERED. Ignore new one.");
-                return;
-            }
-            
-            if (_useAutoCleanup)
-            {
-                ServicesByType.Remove(type);
             }
         }
 
@@ -59,12 +55,6 @@ namespace LLib
             {
                 ServicesByType[type] = service;
             }
-        }
-        
-
-        public static void SetAutoCleanup(bool value)
-        {
-            _useAutoCleanup = value;
         }
     }
 }
